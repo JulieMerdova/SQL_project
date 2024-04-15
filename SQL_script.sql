@@ -90,3 +90,21 @@ AND payroll_quarter = 3
 -- v Q4/2018 si za průměrnou mzdu 31 921 Kč můžeme koupit 1 327 kg chleba a 1 583 litrů mléka.
 
 -- 3. Která kategorie potravin zdražuje nejpomaleji (je u ní nejnižší percentuální meziroční nárůst)?
+SELECT*
+FROM czechia_price cp;
+
+	round( avg( cp2.value), 2)  AS avg_price_prev_year,
+	round( avg( cp.value), 2)  AS avg_price,	
+	round( (avg( cp.value) - avg( cp2.value))/avg( cp2.value),2) AS payroll_growth_perc
+;
+
+SELECT 
+	cp.category_code,
+	year(cp2.date_from) AS 'prev_year',
+	year(cp.date_from) AS 'year',
+FROM czechia_price cp 
+JOIN czechia_price cp2 
+	ON year(cp.date_from) = year(cp2.date_from) + 1
+	AND cp.category_code = cp2.category_code
+GROUP BY category_code, year(cp.date_from)
+;
