@@ -5,9 +5,7 @@ SELECT 	cp.industry_branch_code,
 		cpc.name AS food_category,
 		cpr.category_code AS category_code,
 		round( avg( cpr.value), 2 )  AS avg_price,
-		YEAR ( cpr.date_from ) AS actual_yr,
-		e.country,
-		e.GDP
+		YEAR ( cpr.date_from ) AS actual_yr
 FROM czechia_payroll cp
 JOIN czechia_price cpr
 	ON YEAR (cpr.date_from) = cp.payroll_year
@@ -17,23 +15,41 @@ JOIN czechia_price cpr
 	AND cp.calculation_code = 200
 JOIN czechia_price_category cpc
     ON cpr.category_code = cpc.code
-INNER JOIN economies e 
-	ON e.YEAR = cp.payroll_year
-	AND e.country = 'Czech Republic'
 GROUP BY industry_branch_code, 
 		payroll_year, 
 		food_category,
 		category_code, 
-		actual_yr, 
-		e.GDP,
-		e.country
-		
+		actual_yr
 ;
+
+CREATE OR REPLACE TABLE t_julie_merdova_project_sql_secondary_final AS
+SELECT 
+	c.country,
+	c.abbreviation,
+	c.capital_city,
+	c.currency_name ,
+	c.currency_code,
+	c.religion,
+	c.government_type,
+	e.YEAR,
+	e.gdp,
+	c.population 
+FROM countries c
+JOIN economies e 
+	ON e.country = c.country 
+WHERE continent LIKE 'europe' and GDP IS NOT null
+ORDER BY c.country, e.`year` 
+;
+
 
 EXPLAIN SELECT * FROM v_tjm_prices_sql_project ;
 
 SELECT *
 FROM t_julie_merdova_project_sql_primary_final tjm
+;
+
+SELECT *
+FROM t_julie_merdova_project_sql_secondary_final tjmsf 
 ;
 
 -- 1. Rostou v průběhu let mzdy ve všech odvětvích, nebo v některých klesají?
@@ -140,11 +156,12 @@ WITH growth_prices AS (
  */
 
 WITH gdp AS (
-			SELECT 	actual_yr, 
+			SELECT 	tjmsf.year, 
+					country,
 					GDP,
-					LAG (GDP) OVER (ORDER BY actual_yr ) AS prev_GDP
-			FROM t_julie_merdova_project_sql_primary_final tjm
-			GROUP BY actual_yr
+					LAG (GDP) OVER (ORDER BY 	tjmsf.year) AS prev_GDP
+			FROM t_julie_merdova_project_sql_secondary_final tjmsf 
+			WHERE country = 'Czech Republic' AND YEAR >=2006
 			),
 	growth_prices AS (
 			SELECT 	food_category,
@@ -165,7 +182,11 @@ WITH gdp AS (
 			round(avg((average_wage - prev_wage)/prev_wage)*100, 4) AS payroll_growth_AVG_perc
 	FROM growth_prices
 	JOIN payroll_grow ON growth_prices.actual_yr = payroll_grow.payroll_year
-	JOIN gdp ON gdp.actual_yr = payroll_grow.payroll_year
+	JOIN gdp ON gdp.year = payroll_grow.payroll_year
 	WHERE growth_prices.actual_yr > 2006
 	GROUP BY growth_prices.actual_yr
 	;
+
+
+
+
