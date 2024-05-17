@@ -1,3 +1,5 @@
+-- JULIE MERDOVA
+
 CREATE OR REPLACE TABLE t_julie_merdova_project_sql_primary_final AS
 SELECT 	cp.industry_branch_code,
 		cp.payroll_year AS payroll_year,
