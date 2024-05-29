@@ -11,7 +11,7 @@ WITH wage_grow AS (
 	GROUP BY industry_branch_code,
 			average_wage  
 	)
-	SELECT industry_branch_code,
+	SELECT	industry_branch_code,
 			average_wage,
 			prev_wage,
 			payroll_year,

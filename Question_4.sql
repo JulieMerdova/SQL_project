@@ -3,14 +3,14 @@
 -- 4. Existuje rok, ve kterém byl meziroční nárůst cen potravin výrazně vyšší než růst mezd (větší než 10 %)?
 
 WITH growth_prices AS (
-		SELECT 	food_category,
+		SELECT	food_category,
 				actual_yr,
 				avg_price,
 				LAG(avg_price) OVER (PARTITION BY food_category ORDER BY actual_yr) AS prev_avg_price
 		FROM t_julie_merdova_project_sql_primary_final tjm
 				),
 	payroll_grow AS (
-		SELECT 	payroll_year,
+		SELECT	payroll_year,
 				average_wage ,
 				LAG(average_wage) OVER (PARTITION BY industry_branch_code ORDER BY payroll_year) AS prev_wage
 		FROM t_julie_merdova_project_sql_primary_final tjm

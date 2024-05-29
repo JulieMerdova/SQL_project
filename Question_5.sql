@@ -5,7 +5,7 @@
  */
 
 WITH gdp AS (
-			SELECT 	tjmsf.year, 
+			SELECT	tjmsf.year, 
 					country,
 					GDP,
 					LAG (GDP) OVER (ORDER BY 	tjmsf.year) AS prev_GDP
@@ -21,7 +21,7 @@ WITH gdp AS (
 			FROM t_julie_merdova_project_sql_primary_final tjm
 					),
 	payroll_grow AS (
-		SELECT 	payroll_year,
+		SELECT	payroll_year,
 				average_wage ,
 				LAG(average_wage) OVER (PARTITION BY industry_branch_code ORDER BY payroll_year) AS prev_wage
 		FROM t_julie_merdova_project_sql_primary_final tjm
