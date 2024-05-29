@@ -1,8 +1,7 @@
 -- JULIE MERDOVA
 
 CREATE OR REPLACE TABLE t_julie_merdova_project_sql_secondary_final AS
-SELECT 
-	c.country,
+SELECT 	c.country,
 	c.abbreviation,
 	c.capital_city,
 	c.currency_name ,
@@ -15,8 +14,10 @@ SELECT
 FROM countries c
 JOIN economies e 
 	ON e.country = c.country 
-WHERE continent LIKE 'europe' and GDP IS NOT null
-ORDER BY c.country, e.YEAR 
+WHERE	continent LIKE 'europe' 
+	AND GDP IS NOT null
+ORDER BY	c.country, 
+		e.YEAR 
 ;
 
 SELECT * 
