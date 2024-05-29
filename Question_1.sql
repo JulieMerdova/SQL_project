@@ -19,6 +19,6 @@ WITH wage_grow AS (
 			avg((average_wage-prev_wage)/prev_wage)*100 AS avg_grow_perc
 	FROM 	wage_grow
 	WHERE payroll_year > 2006
-	GROUP BY industry_branch_code, 
-			payroll_year
+	GROUP BY	industry_branch_code, 
+				payroll_year
 ;
